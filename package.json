@@ -1,0 +1,22 @@
+{
+  "name": "mds-react-utils",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yoet92/mds-react-utils.git"
+  },
+  "keywords": [
+    "mds-react-utils"
+  ],
+  "author": "Tony Duran",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yoet92/mds-react-utils/issues"
+  },
+  "homepage": "https://github.com/yoet92/mds-react-utils#readme"
+}
