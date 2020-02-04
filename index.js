@@ -1,5 +1,9 @@
 import Swal from 'sweetalert2'
+import UI from 'lockui'
+import axios from 'axios'
 import './msg.css'
+
+
 
 
 
@@ -179,34 +183,6 @@ export function RandomExact(cantidad) {
     }
     return cantidad > 1 ? result : result[0];
 }
-// Para usar select2
-// function PutSelect2(selector, data, option, settings) {
-
-//     selector = selector !== undefined ? selector : null;
-//     data = EsTipo('array', data) ? data : [];
-//     option = EsTipo('object', option) ? option : {};
-//     option.text = EsTipo('string', option.text) ? option.text : '';
-//     option.attr = EsTipo('object', option.attr) ? option.attr : {};
-//     settings = EsTipo('object', settings) ? settings : {};
-
-//     $(selector).html("<option></option>");
-
-//     data.forEach(function (d) {
-//         var opt = document.createElement('option');
-//         opt.innerHTML = d[option.text];
-//         Object.keys(option.attr).forEach(function (a) {
-//             opt.setAttribute(a, d[option.attr[a]]);
-//         });
-//         $(selector).append(opt);
-//     });
-
-//     var defaults = {
-//         placeholder: "",
-//         allowClear: true
-//     };
-//     $(selector).select2($.extend({}, defaults, settings));
-// }
-// Para obtener las key de un FormData
 // eslint-disable-next-line
 export function KeysFormData(fd) {
 
@@ -217,25 +193,13 @@ export function KeysFormData(fd) {
     });
     return arrKeys;
 }
-// Para comprobar si algun archivo del FormData es mayor a 10 MB
-// eslint-disable-next-line
-export function MoreThanTenMbFilesFormData(fd) {
-
-    if (!EsTipo('formdata', fd)) return false;
-    var keysFD = KeysFormData(fd);
-    for (var i = 0, len = keysFD.length; i < len; i++) {
-        var k = keysFD[i];
-        if (EsTipo('file', fd.get(k)) && fd.get(k).size > 10485760) return true;
-    }
-    return false;
-}
 // Para crear una tabla tipo arbol
 // eslint-disable-next-line
 Object.defineProperty(Object.prototype, 'treeTable', {
     value: function (settings) {
 
         var table = this;
-        if (!table || Object.prototype.toString.call(settings) !== "[object Object]") return false;
+        if (!table || Object.prototype.toString.call(settings) !== "[object Object]") return null;
 
         var allColumns = Array.isArray(settings.columns) ? settings.columns : [];
         var data = Array.isArray(settings.data) ? settings.data : [];
@@ -387,3 +351,75 @@ Object.defineProperty(Object.prototype, 'treeTable', {
     }
 });
 
+
+window.activeAjax = 0;
+
+export default function RunAjax(obj) {
+
+    function unlock() {
+        setTimeout(() => {
+            if (activeAjax < 1) UI.unlock()
+        }, 500);
+    }
+
+    const instance = axios.create({
+        baseURL: obj.baseURL ? obj.baseURL + '/api' : '/api',
+        method: obj.method ? method : 'post',
+        timeout: 180000,
+    });
+
+    instance.interceptors.request.use(function (config) {
+        UI.lock()
+        return config;
+    }, function (error) {
+        unlock()
+        return Promise.reject(error);
+    });
+
+    instance.interceptors.response.use(function (response) {
+        return response;
+    }, function (error) {
+        unlock()
+        return Promise.reject(error);
+    });
+
+    return new Promise(async (resolve, reject) => {
+
+        try {
+            activeAjax++;
+            const res = await instance(obj)
+            if (res.data.hasOwnProperty('Code') && res.data.Code === 0 && res.data.hasOwnProperty('DataModel')) {
+
+                resolve(res.data.DataModel);
+
+            } else if (res.data.hasOwnProperty('Code') && res.data.Code !== 0 && res.data.hasOwnProperty('Message') && res.data.hasOwnProperty('Detail')) {
+
+                reject({
+                    Code: 1,
+                    Message: res.data.Message,
+                    Detail: res.data.Detail,
+                    DataModel: null,
+                    UserInfo: null,
+                    Trace: null
+                })
+            } else {
+
+                resolve(res.data)
+            }
+
+        } catch (err) {
+
+            reject({
+                Code: 1,
+                Message: err.message,
+                Detail: err.stack,
+                DataModel: null,
+                UserInfo: null,
+                Trace: null
+            })
+        } finally {
+            activeAjax--;
+            unlock()
+        }
+    })
+}

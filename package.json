@@ -1,6 +1,6 @@
 {
   "name": "mds-react-utils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -18,5 +18,10 @@
   "bugs": {
     "url": "https://github.com/yoet92/mds-react-utils/issues"
   },
-  "homepage": "https://github.com/yoet92/mds-react-utils#readme"
+  "homepage": "https://github.com/yoet92/mds-react-utils#readme",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "lockui": "^1.0.5",
+    "sweetalert2": "^9.7.1"
+  }
 }
