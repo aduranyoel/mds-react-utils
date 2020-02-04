@@ -354,7 +354,7 @@ Object.defineProperty(Object.prototype, 'treeTable', {
 
 window.activeAjax = 0;
 
-export default function RunAjax(obj) {
+export function RunAjax(obj) {
 
     function unlock() {
         setTimeout(() => {
