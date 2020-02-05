@@ -1,0 +1,20 @@
+.mds-react-utils-dlg{
+    width: 600px;
+    max-width: 600px;
+    margin-top: 80px;
+}
+    .mds-react-utils-dlg .modal-title{
+        font-size: 15px;
+        margin: 0;
+        font-weight: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        word-break: break-all;
+        text-transform: uppercase;
+    }
+
+    .mds-react-utils-dlg .modal-footer {
+        height: 45px;
+        padding: 0 0.75rem;
+    }

@@ -2,7 +2,10 @@ import Swal from 'sweetalert2'
 import UI from 'lockui'
 import axios from 'axios'
 import './msg.css'
-
+import { Modal } from 'react-bootstrap'
+import React, { useState, useEffect, createRef } from 'react'
+import { render } from 'react-dom'
+import './dlg.css'
 
 
 
@@ -75,79 +78,116 @@ Msg.confirm = function (text, type, title, confirmButtonText, thenFn, cancelFn) 
 };
 
 // Para mostrar Dialog
-// function Dlg(message, title, detail, btnText, type) {
+export function Dlg(message, title, detail, btnText, type) {
 
-//     function valid(param) {
-//         return typeof param === 'string';
-//     }
-//     var msg = valid(message) ? message : '';
-//     title = valid(title) ? title : 'AVISO';
-//     btnText = valid(btnText) ? btnText : 'ACEPTAR';
-//     detail = valid(detail) ? detail : null;
-//     type = valid(type) ? type : '';
-//     var isMovil = Dlg.movil === true;
-//     function ifDetail(param) {
-//         if (param === null) return '';
-//         return (
-//             '<div>' +
-//             "<a href=\"javascript:void(0)\" onClick=\"var x = this.parentNode.querySelector('p'); x.style.display === 'none' ? x.style.display = '' : x.style.display = 'none';\">" +
-//             'Ver Detalle' +
-//             '</a>' +
-//             '<p style="max-height: 40vh;overflow: auto; display: none; word-break: break-all;">' +
-//             detail +
-//             '</p>' +
-//             '</div>'
-//         );
-//     }
-//     function msgBody() {
-//         return '<p style="word-break: break-all;">' + msg + '</p>' + ifDetail(detail);
-//     }
-//     function typeMsg() {
-//         switch (type) {
-//             case 'warning':
-//                 return isMovil ? 'background-color: #f8ac59; color: white;' : 'background-color: rgb(240, 173, 78); color: white;';
-//             case 'error':
-//                 return isMovil ? 'background-color: #23c6c8; color: white;' : 'background-color: rgb(217, 83, 79); color: white;';
-//             default:
-//                 return '';
-//         }
-//     }
-//     var modalContainer = document.createElement('div');
-//     var modal = '' +
-//         '<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">' +
-//         '<div class="modal-dialog" role="document">' +
-//         '<div class="modal-content">' +
-//         '<div class="modal-header" style="padding: 15px;height: 45px;display: block;  ' + typeMsg() + '">' +
-//         '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
-//         '<span aria-hidden="true">&times;</span>' +
-//         '</button>' +
-//         '<h5 class="modal-title" style="font-size: 15px;margin: 0;font-weight: normal;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">::: ' + title + ' :::</h5>' +
-//         '</div>' +
-//         '<div class="modal-body">' +
-//         msgBody() +
-//         '</div>' +
-//         '<div class="modal-footer">' +
-//         '<button type="button" class="btn btn-primary btn-dialog" data-dismiss="modal">' + btnText + '</button>' +
-//         '</div>' +
-//         '</div>' +
-//         '</div>' +
-//         '</div>';
+    function valid(param) {
+        return typeof param === 'string';
+    }
+    var msg = valid(message) ? message : '';
+    title = valid(title) ? title : 'AVISO';
+    btnText = valid(btnText) ? btnText : 'ACEPTAR';
+    detail = valid(detail) ? detail : null;
+    type = valid(type) ? type : '';
 
-//     modalContainer.innerHTML = modal;
-//     document.body.appendChild(modalContainer);
-//     $(modalContainer.querySelector('.modal')).on('hidden.bs.modal', function () {
+    function ifDetail(param) {
+        if (param === null) return null;
+        function handleLink(e) {
+            e.preventDefault()
+            pRef.current.style.display === 'none' ? pRef.current.style.display = '' : pRef.current.style.display = 'none';
+        }
+        const pRef = createRef()
+        return (
+            <>
+                <div>
+                    <a href="#!" onClick={(e) => handleLink(e)} style={{ color: 'inherit' }}> Ver Detalle </a>
+                    <p ref={pRef} style={{ maxHeight: '40vh', overflow: 'auto', display: 'none', wordBreak: 'break-all' }}>
+                        {detail}
+                    </p>
+                </div>
+            </>
+        );
+    }
+    function msgBody() {
+        return (
+            <>
+                <p style={{
+                    fontSize: '15px',
+                    margin: 0,
+                    fontWeight: 'normal',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    wordBreak: "break-all",
+                }}>{msg} </p>
+                {ifDetail(detail)}
 
-//         document.body.removeChild(modalContainer);
-//     });
-//     $(modalContainer.querySelector('.modal')).modal('show');
-// }
-// Dlg.error = function (message, title, detail, btnText) {
-//     Dlg(message, title, detail, btnText, 'error');
-// };
-// Dlg.warning = function (message, title, detail, btnText) {
-//     Dlg(message, title, detail, btnText, 'warning');
-// };
+            </>
+        )
+    }
+    function typeMsg() {
+        switch (type) {
+            case 'warning':
+                return {
+                    padding: '15px',
+                    height: '45px',
+                    backgroundColor: 'rgb(240, 173, 78)',
+                    color: 'white'
+                }
+            case 'error':
+                return {
+                    padding: '15px',
+                    height: '45px',
+                    backgroundColor: 'rgb(237, 85, 101)',
+                    color: 'white'
+                }
+            default:
+                return {
+                    padding: '15px',
+                    height: '45px'
+                };
+        }
+    }
+    function ModalComponent() {
 
+        const [show, setShow] = useState(false);
+
+        const handleClose = () => {
+            document.body.removeChild(container)
+            setShow(false);
+        }
+        const handleShow = () => setShow(true);
+
+        useEffect(() => {
+            handleShow()
+        }, [])
+
+        return (
+            <Modal show={show} onHide={handleClose} dialogClassName="mds-react-utils-dlg">
+                <Modal.Header closeButton style={typeMsg()}>
+                    <Modal.Title>:: {title} ::</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{msgBody()}</Modal.Body>
+                <Modal.Footer>
+                    <button className="btn btn-primary btn-sm" onClick={handleClose}>
+                        {btnText}
+                    </button>
+                </Modal.Footer>
+            </Modal>
+        );
+    }
+
+    var container = document.createElement('div')
+    document.body.appendChild(container)
+
+    render(<ModalComponent />, container)
+
+}
+Dlg.error = function (message, title, detail, btnText) {
+    Dlg(message, title, detail, btnText, 'error');
+};
+Dlg.warning = function (message, title, detail, btnText) {
+    Dlg(message, title, detail, btnText, 'warning');
+};
 
 // Convertir Byte Array (byte[]) a base64
 // eslint-disable-next-line
