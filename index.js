@@ -2,17 +2,10 @@ import Swal from 'sweetalert2'
 import UI from 'lockui'
 import axios from 'axios'
 import './msg.css'
-import { Modal } from 'react-bootstrap'
-import React, { useState, useEffect, createRef } from 'react'
-import { render } from 'react-dom'
-import './dlg.css'
 
 
 
 
-export function NotUndefinedNullFunction(param) {
-    return param !== undefined && param !== null && typeof param !== 'function';
-}
 export function EsTipo(type, param) {
     if (typeof type === 'string') {
         switch (type) {
@@ -76,119 +69,6 @@ export function Msg(text, type, title, confirmButtonText, thenFn, cancelFn, isCo
 Msg.confirm = function (text, type, title, confirmButtonText, thenFn, cancelFn) {
     Msg(text, type, title, confirmButtonText, thenFn, cancelFn, true);
 };
-
-// Para mostrar Dialog
-export function Dlg(message, title, detail, btnText, type) {
-
-    function valid(param) {
-        return typeof param === 'string';
-    }
-    var msg = valid(message) ? message : '';
-    title = valid(title) ? title : 'AVISO';
-    btnText = valid(btnText) ? btnText : 'ACEPTAR';
-    detail = valid(detail) ? detail : null;
-    type = valid(type) ? type : '';
-
-    function ifDetail(param) {
-        if (param === null) return null;
-        function handleLink(e) {
-            e.preventDefault()
-            pRef.current.style.display === 'none' ? pRef.current.style.display = '' : pRef.current.style.display = 'none';
-        }
-        const pRef = createRef()
-        return (
-            <>
-                <div>
-                    <a href="#!" onClick={(e) => handleLink(e)} style={{ color: 'inherit' }}> Ver Detalle </a>
-                    <p ref={pRef} style={{ maxHeight: '40vh', overflow: 'auto', display: 'none', wordBreak: 'break-all' }}>
-                        {detail}
-                    </p>
-                </div>
-            </>
-        );
-    }
-    function msgBody() {
-        return (
-            <>
-                <p style={{
-                    fontSize: '15px',
-                    margin: 0,
-                    fontWeight: 'normal',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    wordBreak: "break-all",
-                }}>{msg} </p>
-                {ifDetail(detail)}
-
-            </>
-        )
-    }
-    function typeMsg() {
-        switch (type) {
-            case 'warning':
-                return {
-                    padding: '15px',
-                    height: '45px',
-                    backgroundColor: 'rgb(240, 173, 78)',
-                    color: 'white'
-                }
-            case 'error':
-                return {
-                    padding: '15px',
-                    height: '45px',
-                    backgroundColor: 'rgb(237, 85, 101)',
-                    color: 'white'
-                }
-            default:
-                return {
-                    padding: '15px',
-                    height: '45px'
-                };
-        }
-    }
-    function ModalComponent() {
-
-        const [show, setShow] = useState(false);
-
-        const handleClose = () => {
-            document.body.removeChild(container)
-            setShow(false);
-        }
-        const handleShow = () => setShow(true);
-
-        useEffect(() => {
-            handleShow()
-        }, [])
-
-        return (
-            <Modal show={show} onHide={handleClose} dialogClassName="mds-react-utils-dlg">
-                <Modal.Header closeButton style={typeMsg()}>
-                    <Modal.Title>:: {title} ::</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>{msgBody()}</Modal.Body>
-                <Modal.Footer>
-                    <button className="btn btn-primary btn-sm" onClick={handleClose}>
-                        {btnText}
-                    </button>
-                </Modal.Footer>
-            </Modal>
-        );
-    }
-
-    var container = document.createElement('div')
-    document.body.appendChild(container)
-
-    render(<ModalComponent />, container)
-
-}
-Dlg.error = function (message, title, detail, btnText) {
-    Dlg(message, title, detail, btnText, 'error');
-};
-Dlg.warning = function (message, title, detail, btnText) {
-    Dlg(message, title, detail, btnText, 'warning');
-};
-
 // Convertir Byte Array (byte[]) a base64
 // eslint-disable-next-line
 export function ByteArrToBase64(buffer) {
